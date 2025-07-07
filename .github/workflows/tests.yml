@@ -1,0 +1,35 @@
+# Workflow to run Lua Busted tests
+name: Lua Tests
+
+on:
+  push:
+    paths:
+      - "**.lua"
+      - ".github/workflows/**"
+      - "tests.lua"
+      - "logic.lua"
+  pull_request:
+    paths:
+      - "**.lua"
+      - ".github/workflows/**"
+      - "tests.lua"
+      - "logic.lua"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        lua-version: ["5.4"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Lua
+        uses: leafo/gh-actions-lua@v11
+        with:
+          luaVersion: ${{ matrix.lua-version }}
+      - name: Install LuaRocks
+        uses: leafo/gh-actions-luarocks@v4
+      - name: Install Busted
+        run: luarocks install busted
+      - name: Run Busted tests
+        run: busted tests.lua
